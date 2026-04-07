@@ -457,9 +457,12 @@ export default function CalendarPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-gradient-to-r from-sky-500 to-teal-400 px-6 py-4 shrink-0">
-              <h2 className="text-white font-bold text-base">
-                {modal.mode === "create" ? "✦ 予定を追加" : "✦ 予定を編集"}
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-white font-bold text-base">
+                  {modal.mode === "create" ? "✦ 予定を追加" : "✦ 予定を編集"}
+                </h2>
+                <button onClick={() => setModal({ mode: "closed" })} className="text-white/70 hover:text-white text-xl leading-none">×</button>
+              </div>
               {modal.mode === "edit" && (
                 <p className="text-sky-100 text-xs mt-0.5">
                   <span className="inline-block w-2 h-2 rounded-full mr-1 align-middle" style={{ backgroundColor: modal.event.extendedProps.userColor }} />
@@ -467,6 +470,11 @@ export default function CalendarPage() {
                 </p>
               )}
             </div>
+            {formError && (
+              <div className="bg-red-50 border-b border-red-100 px-6 py-2.5 shrink-0">
+                <p className="text-red-500 text-sm font-medium">{formError}</p>
+              </div>
+            )}
 
             <div className="px-6 py-5 space-y-5 overflow-y-auto">
               {/* タイトル */}
@@ -684,25 +692,22 @@ export default function CalendarPage() {
                 />
               </div>
 
-              {formError && (
-                <p className="text-red-500 text-xs font-medium bg-red-50 rounded-xl px-3 py-2">{formError}</p>
-              )}
             </div>
 
-            <div className="px-6 pb-6 flex gap-2 shrink-0">
+            <div className="px-4 pb-6 pt-3 flex gap-2 shrink-0 border-t border-gray-50">
               <button
                 onClick={() => setModal({ mode: "closed" })}
-                className="flex-1 border-2 border-gray-100 text-gray-500 rounded-xl py-2.5 text-sm font-semibold hover:bg-gray-50 transition-colors"
+                className="flex-1 border-2 border-gray-100 text-gray-500 rounded-xl py-3.5 text-sm font-semibold active:bg-gray-100 transition-colors"
               >
                 キャンセル
               </button>
               {modal.mode === "edit" && isMyEvent && (
-                <button onClick={handleDelete} className="border-2 border-red-100 text-red-400 rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-red-50 transition-colors">
+                <button onClick={handleDelete} className="border-2 border-red-100 text-red-400 rounded-xl px-4 py-3.5 text-sm font-semibold active:bg-red-50 transition-colors">
                   削除
                 </button>
               )}
               {canEdit && (
-                <button onClick={handleSave} className="flex-1 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl py-2.5 text-sm font-bold hover:opacity-90 transition-opacity shadow-md shadow-sky-100">
+                <button onClick={handleSave} className="flex-1 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl py-3.5 text-sm font-bold active:opacity-80 transition-opacity shadow-md shadow-sky-100">
                   保存
                 </button>
               )}
