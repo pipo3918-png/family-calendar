@@ -7,6 +7,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import type { EventClickArg, DateSelectArg, EventDropArg, EventChangeArg, EventContentArg } from "@fullcalendar/core";
+import type { DateClickArg } from "@fullcalendar/interaction";
 import Link from "next/link";
 import TimePicker from "@/components/TimePicker";
 
@@ -117,6 +118,14 @@ export default function CalendarPage() {
   const [formError, setFormError] = useState("");
   const [newTagName, setNewTagName] = useState("");
   const [addingTag, setAddingTag] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     fetch("/api/me").then((r) => {
@@ -160,6 +169,18 @@ export default function CalendarPage() {
       setFormEndTime(roundTime(e.time));
       setFormEndDate(e.date || date);
     }
+    setModal({ mode: "create" });
+  }
+
+  function openCreateFromDateClick(info: DateClickArg) {
+    resetForm();
+    const date = info.dateStr.slice(0, 10);
+    setFormDate(date); setFormEndDate(date);
+    const now = new Date();
+    setFormStartTime(roundTime(`${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`));
+    const next = new Date(now.getTime() + 60 * 60 * 1000);
+    setFormEndTime(roundTime(`${String(next.getHours()).padStart(2, "0")}:${String(next.getMinutes()).padStart(2, "0")}`));
+    setFormAllDay(false);
     setModal({ mode: "create" });
   }
 
@@ -348,36 +369,36 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col h-screen" style={{ background: "var(--background)" }}>
-      <header className="bg-white/80 backdrop-blur border-b border-sky-100 px-5 py-3 flex items-center justify-between">
+      <header className="bg-white/80 backdrop-blur border-b border-sky-100 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-2xl select-none">🌿</span>
-          <span className="font-black tracking-tight text-sky-700 text-lg">
-            wapicoco <span className="text-sky-400 font-light">calendar</span>
+          <span className="text-xl select-none">🌿</span>
+          <span className="font-black tracking-tight text-sky-700 text-base">
+            wapicoco <span className="text-sky-400 font-light hidden sm:inline">calendar</span>
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <span className="text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-teal-400 px-3 py-1.5 rounded-full">
             カレンダー
           </span>
-          <Link href="/report" className="text-xs font-semibold text-sky-500 hover:text-sky-700 transition-colors px-3 py-1.5 rounded-full hover:bg-sky-50">
+          <Link href="/report" className="text-xs font-semibold text-sky-500 px-3 py-1.5 rounded-full hover:bg-sky-50">
             レポート
           </Link>
           {me && (
-            <>
-              <div className="flex items-center gap-2 bg-sky-50 rounded-full px-3 py-1.5">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-sky-50 rounded-full px-2.5 py-1.5">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: me.color }} />
-                <span className="text-xs font-semibold text-sky-700">{me.name}</span>
+                <span className="text-xs font-semibold text-sky-700 hidden sm:inline">{me.name}</span>
               </div>
-              <button onClick={handleLogout} className="text-xs text-sky-300 hover:text-sky-500 transition-colors font-medium">
+              <button onClick={handleLogout} className="text-xs text-sky-300 hover:text-sky-500 transition-colors font-medium hidden sm:inline">
                 ログアウト
               </button>
-            </>
+            </div>
           )}
         </div>
       </header>
 
-      <div className="flex-1 px-5 py-4 overflow-hidden">
-        <div className="h-full bg-white rounded-2xl shadow-sm border border-sky-100 p-4 overflow-hidden">
+      <div className="flex-1 px-2 py-2 sm:px-5 sm:py-4 overflow-hidden">
+        <div className="h-full bg-white rounded-xl sm:rounded-2xl shadow-sm border border-sky-100 p-2 sm:p-4 overflow-hidden">
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -397,23 +418,42 @@ export default function CalendarPage() {
             height="100%"
             events={events}
             selectable editable
+            longPressDelay={0}
             select={openCreate}
+            dateClick={openCreateFromDateClick}
             eventClick={openEdit}
             eventDrop={handleEventDrop}
             eventResize={(info: EventChangeArg) => handleEventDrop(info as unknown as EventDropArg)}
             eventContent={renderEventContent}
-            dayMaxEvents={3}
+            dayMaxEvents={isMobile ? 2 : 3}
           />
         </div>
       </div>
 
+      {/* モバイル用FAB（＋ボタン） */}
+      <button
+        onClick={() => {
+          const today = new Date();
+          const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+          resetForm();
+          setFormDate(date); setFormEndDate(date);
+          setFormStartTime(roundTime(`${String(today.getHours()).padStart(2,"0")}:${String(today.getMinutes()).padStart(2,"0")}`));
+          const next = new Date(today.getTime() + 60 * 60 * 1000);
+          setFormEndTime(roundTime(`${String(next.getHours()).padStart(2,"0")}:${String(next.getMinutes()).padStart(2,"0")}`));
+          setModal({ mode: "create" });
+        }}
+        className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-400 text-white rounded-full shadow-lg shadow-sky-200 flex items-center justify-center text-2xl font-bold z-40 active:scale-95 transition-transform"
+      >
+        ＋
+      </button>
+
       {modal.mode !== "closed" && (
         <div
-          className="fixed inset-0 bg-sky-950/30 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6"
+          className="fixed inset-0 bg-sky-950/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 sm:px-4 sm:py-6"
           onClick={() => setModal({ mode: "closed" })}
         >
           <div
-            className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col max-h-full"
+            className="bg-white w-full sm:max-w-sm sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-full"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-gradient-to-r from-sky-500 to-teal-400 px-6 py-4 shrink-0">
@@ -434,7 +474,7 @@ export default function CalendarPage() {
                 <label className={`${labelCls} text-sky-500`}>タイトル</label>
                 <input
                   type="text" value={formTitle} onChange={(e) => setFormTitle(e.target.value)}
-                  autoFocus disabled={!canEdit} placeholder="予定のタイトル"
+                  autoFocus={!isMobile} disabled={!canEdit} placeholder="予定のタイトル"
                   className={inputCls(!canEdit) + " placeholder-gray-300"}
                 />
               </div>
