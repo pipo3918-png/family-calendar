@@ -20,8 +20,8 @@ const TAG_PALETTE = [
 ];
 
 const LATE_LABELS: Record<number, { label: string; icon: string; color: string }> = {
-  1: { label: "少し遅い",   icon: "🌙", color: "#fbbf24" },
-  2: { label: "かなり遅い", icon: "🌛", color: "#f97316" },
+  1: { label: "少し遅い",   icon: "🌛", color: "#fbbf24" },
+  2: { label: "かなり遅い", icon: "🌚", color: "#f97316" },
 };
 
 export default function ReportPage() {

@@ -63,8 +63,8 @@ const PARTICIPANTS: { name: string; color: string }[] = [
 
 const LATE_LEVELS = [
   { level: 0, label: "通常", icon: "🏠", color: "bg-gray-100 text-gray-500 border-gray-200" },
-  { level: 1, label: "少し遅い", icon: "🌙", color: "bg-amber-100 text-amber-700 border-amber-200" },
-  { level: 2, label: "かなり遅い", icon: "🌛", color: "bg-orange-100 text-orange-700 border-orange-200" },
+  { level: 1, label: "少し遅い", icon: "🌛", color: "bg-amber-100 text-amber-700 border-amber-200" },
+  { level: 2, label: "かなり遅い", icon: "🌚", color: "bg-orange-100 text-orange-700 border-orange-200" },
 ];
 
 function fmtTime(d: Date): string {
