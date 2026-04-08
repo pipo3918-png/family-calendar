@@ -413,16 +413,27 @@ export default function CalendarPage() {
             initialView="dayGridMonth"
             locale="en"
             firstDay={1}
-            headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }}
+            headerToolbar={isMobile
+              ? { left: "prev,next", center: "title", right: "dayGridMonth,dayGridWeek" }
+              : { left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }
+            }
             buttonText={{ today: "今日", month: "月", week: "週" }}
-            titleFormat={(date) => {
-              const start = date.start;
-              const end = date.end;
-              if (end && (end.month !== start.month || end.year !== start.year)) {
-                const endDate = new Date(end.year, end.month, end.day - 1);
-                return `${start.year}/${start.month + 1}/${start.day}-${endDate.getDate()}`;
-              }
-              return `${start.year}/${start.month + 1}`;
+            views={{
+              dayGridMonth: {
+                titleFormat: (date) =>
+                  `${date.start.getUTCFullYear()}/${date.start.getUTCMonth() + 1}`,
+              },
+              dayGridWeek: {
+                titleFormat: (date) => {
+                  const s = date.start;
+                  const e = date.end ? new Date(date.end.getTime() - 86400000) : s;
+                  const sy = s.getUTCFullYear(), sm = s.getUTCMonth() + 1, sd = s.getUTCDate();
+                  const ey = e.getUTCFullYear(), em = e.getUTCMonth() + 1, ed = e.getUTCDate();
+                  if (sy !== ey) return `${sy}/${sm}/${sd}-${ey}/${em}/${ed}`;
+                  if (sm !== em) return `${sy}/${sm}/${sd}-${em}/${ed}`;
+                  return `${sy}/${sm}/${sd}-${ed}`;
+                },
+              },
             }}
             dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
             dayCellContent={(info) => info.dayNumberText}

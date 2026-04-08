@@ -143,3 +143,33 @@ body {
 .fc .fc-toolbar.fc-header-toolbar {
   margin-bottom: 12px;
 }
+
+@media (max-width: 640px) {
+  .fc .fc-toolbar.fc-header-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    align-items: center;
+  }
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem;
+  }
+  .fc .fc-button {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.55rem;
+  }
+  .fc .fc-daygrid-day-number {
+    font-size: 0.72rem;
+    padding: 2px 4px;
+  }
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.65rem;
+  }
+  .fc .fc-event {
+    font-size: 0.65rem;
+    padding: 1px 3px;
+  }
+}
