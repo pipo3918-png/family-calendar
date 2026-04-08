@@ -78,7 +78,7 @@ export default function ReportPage() {
           <button onClick={prevMonth} className="w-9 h-9 flex items-center justify-center rounded-full bg-white border-2 border-sky-100 text-sky-500 hover:border-sky-300 transition-colors font-bold text-lg">
             ‹
           </button>
-          <h2 className="text-xl font-black text-sky-800 tracking-tight">{year}年 {month}月</h2>
+          <h2 className="text-xl font-black text-sky-800 tracking-tight">{new Date(year, month - 1).toLocaleDateString("en-US", { year: "numeric", month: "long" })}</h2>
           <button onClick={nextMonth} className="w-9 h-9 flex items-center justify-center rounded-full bg-white border-2 border-sky-100 text-sky-500 hover:border-sky-300 transition-colors font-bold text-lg">
             ›
           </button>

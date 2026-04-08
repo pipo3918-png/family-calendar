@@ -411,12 +411,12 @@ export default function CalendarPage() {
             ref={calendarRef}
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
-            locale="ja"
+            locale="en"
             firstDay={1}
             headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }}
-            buttonText={{ today: "今日", month: "月", week: "週" }}
+            buttonText={{ today: "Today", month: "Month", week: "Week" }}
             dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
-            dayCellContent={(info) => info.dayNumberText.replace("日", "")}
+            dayCellContent={(info) => info.dayNumberText}
             dayCellClassNames={(info) => {
               const d = info.date.getDay();
               if (d === 6) return ["!bg-blue-50"];
