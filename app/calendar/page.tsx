@@ -98,6 +98,7 @@ function isoToLocal(isoStr: string): string {
 export default function CalendarPage() {
   const router = useRouter();
   const calendarRef = useRef<FullCalendar>(null);
+  const eventClickedRef = useRef(false);
   const [me, setMe] = useState<User | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
@@ -173,6 +174,7 @@ export default function CalendarPage() {
   }
 
   function openCreateFromDateClick(info: DateClickArg) {
+    if (eventClickedRef.current) return;
     resetForm();
     const date = info.dateStr.slice(0, 10);
     setFormDate(date); setFormEndDate(date);
@@ -185,6 +187,8 @@ export default function CalendarPage() {
   }
 
   function openEdit(info: EventClickArg) {
+    eventClickedRef.current = true;
+    setTimeout(() => { eventClickedRef.current = false; }, 300);
     const ev = events.find((e) => e.id === info.event.id);
     if (!ev) return;
     resetForm();
