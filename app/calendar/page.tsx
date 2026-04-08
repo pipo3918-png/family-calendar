@@ -160,7 +160,7 @@ export default function CalendarPage() {
     setFormDate(date); setFormEndDate(date);
     if (info.allDay) {
       setFormStartTime("18:30");
-      setFormEndTime("19:30");
+      setFormEndTime("22:30");
     } else {
       const s = splitDateTime(isoToLocal(info.startStr));
       const e = splitDateTime(isoToLocal(info.endStr));
@@ -177,7 +177,7 @@ export default function CalendarPage() {
     const date = info.dateStr.slice(0, 10);
     setFormDate(date); setFormEndDate(date);
     setFormStartTime("18:30");
-    setFormEndTime("19:30");
+    setFormEndTime("22:30");
     setFormAllDay(false);
     setModal({ mode: "create" });
   }
@@ -212,7 +212,7 @@ export default function CalendarPage() {
     setFormAllDay(allDay);
     if (!allDay && !formStartTime) {
       setFormStartTime("18:30");
-      setFormEndTime("19:30");
+      setFormEndTime("22:30");
     }
   }
 
@@ -436,7 +436,7 @@ export default function CalendarPage() {
           resetForm();
           setFormDate(date); setFormEndDate(date);
           setFormStartTime("18:30");
-          setFormEndTime("19:30");
+          setFormEndTime("22:30");
           setModal({ mode: "create" });
         }}
         className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-400 text-white rounded-full shadow-lg shadow-sky-200 flex items-center justify-center text-2xl font-bold z-40 active:scale-95 transition-transform"
