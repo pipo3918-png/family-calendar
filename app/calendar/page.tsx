@@ -80,6 +80,13 @@ function splitDateTime(dt: string): { date: string; time: string } {
   return { date: dt.slice(0, 10), time: dt.slice(11, 16) };
 }
 
+function addDays(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1, d + days);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 function roundTime(time: string): string {
   if (!time) return "";
   const [h, m] = time.split(":").map(Number);
@@ -192,7 +199,7 @@ export default function CalendarPage() {
     setFormAllDay(ev.allDay);
     if (ev.allDay) {
       setFormDate(ev.start.slice(0, 10));
-      setFormEndDate(ev.end ? ev.end.slice(0, 10) : ev.start.slice(0, 10));
+      setFormEndDate(ev.end ? addDays(ev.end.slice(0, 10), -1) : ev.start.slice(0, 10));
     } else {
       const s = splitDateTime(isoToLocal(ev.start));
       const e = ev.end ? splitDateTime(isoToLocal(ev.end)) : { date: s.date, time: "" };
@@ -249,7 +256,7 @@ export default function CalendarPage() {
     const body = {
       title: formTitle.trim(),
       start: formAllDay ? formDate : `${formDate}T${formStartTime || "00:00"}`,
-      end: formAllDay ? (formEndDate || formDate) : (formEndTime ? `${formEndDate || formDate}T${formEndTime}` : null),
+      end: formAllDay ? addDays(formEndDate || formDate, 1) : (formEndTime ? `${formEndDate || formDate}T${formEndTime}` : null),
       allDay: formAllDay,
       location: formLocation || null,
       lateLevel: formLateLevel,
