@@ -312,8 +312,13 @@ export default function CalendarPage() {
   function renderEventContent(info: EventContentArg) {
     const { participants, tentative, tags } = info.event.extendedProps as CalendarEvent["extendedProps"];
     const eventParticipants = PARTICIPANTS.filter((p) => participants?.includes(p.name));
+    const color = info.event.backgroundColor;
+    const isAllDay = info.event.allDay;
     return (
-      <div className="px-1 py-0.5 w-full">
+      <div
+        className="px-1 py-0.5 w-full rounded"
+        style={isAllDay ? { backgroundColor: color + "28", color } : {}}
+      >
         <div className="flex items-center gap-1 flex-wrap">
           {/* 参加者アバター */}
           {eventParticipants.length > 0 ? (
@@ -334,7 +339,7 @@ export default function CalendarPage() {
             {tentative && (
               <span className="mr-0.5 bg-amber-400 text-white rounded px-0.5 font-black" style={{ fontSize: "9px" }}>?</span>
             )}
-            {!info.event.allDay && info.event.start && (
+            {!isAllDay && info.event.start && (
               <span className="opacity-75 mr-0.5 font-normal">
                 {fmtTime(info.event.start)}
                 {info.event.end ? `–${fmtTime(info.event.end)}` : ""}
