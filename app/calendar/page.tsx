@@ -398,11 +398,11 @@ export default function CalendarPage() {
         <div className="h-full bg-white rounded-xl sm:rounded-2xl shadow-sm border border-sky-100 p-2 sm:p-4 overflow-hidden">
           <FullCalendar
             ref={calendarRef}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
             locale="ja"
             firstDay={1}
-            headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek" }}
+            headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }}
             buttonText={{ today: "今日", month: "月", week: "週" }}
             dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
             dayCellContent={(info) => info.dayNumberText.replace("日", "")}
