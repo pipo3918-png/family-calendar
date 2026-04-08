@@ -107,6 +107,14 @@ body {
   overflow: visible !important;
 }
 
+.fc .fc-daygrid-block-event {
+  opacity: 0.45;
+}
+
+.fc .fc-daygrid-block-event:hover {
+  opacity: 0.6;
+}
+
 .fc .fc-event:hover { opacity: 0.85; }
 
 .fc .fc-daygrid-event-dot { display: none; }
