@@ -362,8 +362,7 @@ export default function CalendarPage() {
     );
   }
 
-  const isMyEvent = modal.mode === "edit" && me && modal.event.extendedProps.userId === me.id;
-  const canEdit = modal.mode === "create" || isMyEvent;
+  const canEdit = (modal.mode === "create" || modal.mode === "edit") && me !== null;
 
   const inputCls = (disabled?: boolean) =>
     `w-full border-2 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none transition-colors ${

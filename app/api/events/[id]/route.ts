@@ -12,7 +12,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const db = getDb();
   const event = db.prepare("SELECT user_id FROM events WHERE id = ?").get(Number(id)) as { user_id: number } | undefined;
   if (!event) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (event.user_id !== session.userId) return NextResponse.json({ error: "自分の予定のみ編集できます" }, { status: 403 });
 
   db.prepare(
     "UPDATE events SET title=?, start=?, end=?, all_day=?, location=?, late_level=?, notes=?, participants=?, tentative=?, updated_at=datetime('now') WHERE id=?"
@@ -37,7 +36,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const db = getDb();
   const event = db.prepare("SELECT user_id FROM events WHERE id = ?").get(Number(id)) as { user_id: number } | undefined;
   if (!event) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (event.user_id !== session.userId) return NextResponse.json({ error: "自分の予定のみ削除できます" }, { status: 403 });
 
   db.prepare("DELETE FROM events WHERE id = ?").run(Number(id));
   return NextResponse.json({ ok: true });
