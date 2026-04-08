@@ -306,8 +306,8 @@ export default function CalendarPage() {
     const { participants, tentative, tags } = info.event.extendedProps as CalendarEvent["extendedProps"];
     const eventParticipants = PARTICIPANTS.filter((p) => participants?.includes(p.name));
     return (
-      <div className="px-1 py-0.5 w-full overflow-hidden">
-        <div className="flex items-center gap-1 min-w-0">
+      <div className="px-1 py-0.5 w-full">
+        <div className="flex items-center gap-1 flex-wrap">
           {/* 参加者アバター */}
           {eventParticipants.length > 0 ? (
             <div className="flex -space-x-1 shrink-0">
@@ -323,7 +323,7 @@ export default function CalendarPage() {
               ))}
             </div>
           ) : null}
-          <span className="text-xs font-semibold truncate leading-tight">
+          <span className="text-xs font-semibold leading-tight break-words">
             {tentative && (
               <span className="mr-0.5 bg-amber-400 text-white rounded px-0.5 font-black" style={{ fontSize: "9px" }}>?</span>
             )}
