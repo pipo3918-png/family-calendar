@@ -420,8 +420,9 @@ export default function CalendarPage() {
             }}
             height="100%"
             events={events}
-            selectable editable
-            longPressDelay={0}
+            selectable
+            editable={!isMobile}
+            longPressDelay={isMobile ? 500 : 0}
             select={openCreate}
             dateClick={openCreateFromDateClick}
             eventClick={openEdit}
