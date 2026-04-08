@@ -469,7 +469,7 @@ export default function CalendarPage() {
               {modal.mode === "edit" && (
                 <p className="text-sky-100 text-xs mt-0.5">
                   <span className="inline-block w-2 h-2 rounded-full mr-1 align-middle" style={{ backgroundColor: modal.event.extendedProps.userColor }} />
-                  {modal.event.extendedProps.userName}{!isMyEvent && "　の予定（閲覧のみ）"}
+                  {modal.event.extendedProps.userName}
                 </p>
               )}
             </div>
@@ -704,7 +704,7 @@ export default function CalendarPage() {
               >
                 キャンセル
               </button>
-              {modal.mode === "edit" && isMyEvent && (
+              {modal.mode === "edit" && (
                 <button onClick={handleDelete} className="border-2 border-red-100 text-red-400 rounded-xl px-4 py-3.5 text-sm font-semibold active:bg-red-50 transition-colors">
                   削除
                 </button>
