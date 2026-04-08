@@ -63,7 +63,7 @@ function getDb() {
   db.prepare("UPDATE tags SET name='病院' WHERE name='医療'").run();
   db.prepare("UPDATE tags SET name='保育園' WHERE name='学校'").run();
   const insertTag = db.prepare("INSERT OR IGNORE INTO tags (name) VALUES (?)");
-  for (const tag of ["仕事", "スポーツ", "飲み会", "ヨガ", "病院", "保育園", "付き合い"]) {
+  for (const tag of ["仕事", "スポーツ", "飲み会", "ヨガ", "病院", "保育園", "付き合い", "おでかけ"]) {
     insertTag.run(tag);
   }
 
