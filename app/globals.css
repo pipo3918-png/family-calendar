@@ -97,6 +97,16 @@ body {
   transition: opacity 0.15s;
 }
 
+.fc .fc-event .fc-event-main {
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+.fc .fc-daygrid-event {
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
 .fc .fc-event:hover { opacity: 0.85; }
 
 .fc .fc-daygrid-event-dot { display: none; }
