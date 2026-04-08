@@ -65,7 +65,6 @@ const LATE_LEVELS = [
   { level: 0, label: "通常", icon: "🏠", color: "bg-gray-100 text-gray-500 border-gray-200" },
   { level: 1, label: "少し遅い", icon: "🌙", color: "bg-amber-100 text-amber-700 border-amber-200" },
   { level: 2, label: "かなり遅い", icon: "🌛", color: "bg-orange-100 text-orange-700 border-orange-200" },
-  { level: 3, label: "深夜", icon: "🌑", color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
 ];
 
 function fmtTime(d: Date): string {
@@ -558,16 +557,6 @@ export default function CalendarPage() {
                 )}
               </div>
 
-              {/* 場所 */}
-              <div>
-                <label className={`${labelCls} text-teal-500`}>場所</label>
-                <input
-                  type="text" value={formLocation} onChange={(e) => setFormLocation(e.target.value)}
-                  disabled={!canEdit} placeholder="例：渋谷、自宅、会社..."
-                  className={inputCls(!canEdit) + " placeholder-gray-300"}
-                />
-              </div>
-
               {/* 参加者 */}
               <div>
                 <label className={`${labelCls} text-sky-500`}>参加者</label>
@@ -603,26 +592,14 @@ export default function CalendarPage() {
                 </div>
               </div>
 
-              {/* 帰宅が遅くなりそうレベル */}
+              {/* 場所 */}
               <div>
-                <label className={`${labelCls} text-orange-500`}>帰宅が遅くなりそう</label>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {LATE_LEVELS.map(({ level, label, icon, color }) => (
-                    <button
-                      key={level} type="button"
-                      disabled={!canEdit}
-                      onClick={() => canEdit && setFormLateLevel(level)}
-                      className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                        formLateLevel === level
-                          ? `${color} border-current scale-105 shadow-sm`
-                          : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"
-                      }`}
-                    >
-                      <span className="text-lg leading-none">{icon}</span>
-                      <span className="leading-tight text-center">{label}</span>
-                    </button>
-                  ))}
-                </div>
+                <label className={`${labelCls} text-teal-500`}>場所</label>
+                <input
+                  type="text" value={formLocation} onChange={(e) => setFormLocation(e.target.value)}
+                  disabled={!canEdit} placeholder="例：渋谷、自宅、会社..."
+                  className={inputCls(!canEdit) + " placeholder-gray-300"}
+                />
               </div>
 
               {/* タグ */}
@@ -685,6 +662,28 @@ export default function CalendarPage() {
                       </button>
                     )
                   )}
+                </div>
+              </div>
+
+              {/* 帰宅時間 */}
+              <div>
+                <label className={`${labelCls} text-orange-500`}>帰宅時間</label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {LATE_LEVELS.map(({ level, label, icon, color }) => (
+                    <button
+                      key={level} type="button"
+                      disabled={!canEdit}
+                      onClick={() => canEdit && setFormLateLevel(level)}
+                      className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                        formLateLevel === level
+                          ? `${color} border-current scale-105 shadow-sm`
+                          : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"
+                      }`}
+                    >
+                      <span className="text-lg leading-none">{icon}</span>
+                      <span className="leading-tight text-center">{label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
 

@@ -22,7 +22,6 @@ const TAG_PALETTE = [
 const LATE_LABELS: Record<number, { label: string; icon: string; color: string }> = {
   1: { label: "少し遅い",   icon: "🌙", color: "#fbbf24" },
   2: { label: "かなり遅い", icon: "🌛", color: "#f97316" },
-  3: { label: "深夜",       icon: "🌑", color: "#6366f1" },
 };
 
 export default function ReportPage() {
@@ -165,7 +164,7 @@ export default function ReportPage() {
                     <div>
                       <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">帰宅が遅くなった日</p>
                       <div className="flex flex-wrap gap-2">
-                        {([1, 2, 3] as const).map((level) => {
+                        {([1, 2] as const).map((level) => {
                           const count = p.lateBreakdown[level];
                           if (!count) return null;
                           const info = LATE_LABELS[level];
