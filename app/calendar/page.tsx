@@ -159,10 +159,8 @@ export default function CalendarPage() {
     const date = info.startStr.slice(0, 10);
     setFormDate(date); setFormEndDate(date);
     if (info.allDay) {
-      const now = new Date();
-      setFormStartTime(roundTime(`${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`));
-      const next = new Date(now.getTime() + 60 * 60 * 1000);
-      setFormEndTime(roundTime(`${String(next.getHours()).padStart(2, "0")}:${String(next.getMinutes()).padStart(2, "0")}`));
+      setFormStartTime("18:30");
+      setFormEndTime("19:30");
     } else {
       const s = splitDateTime(isoToLocal(info.startStr));
       const e = splitDateTime(isoToLocal(info.endStr));
@@ -178,10 +176,8 @@ export default function CalendarPage() {
     resetForm();
     const date = info.dateStr.slice(0, 10);
     setFormDate(date); setFormEndDate(date);
-    const now = new Date();
-    setFormStartTime(roundTime(`${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`));
-    const next = new Date(now.getTime() + 60 * 60 * 1000);
-    setFormEndTime(roundTime(`${String(next.getHours()).padStart(2, "0")}:${String(next.getMinutes()).padStart(2, "0")}`));
+    setFormStartTime("18:30");
+    setFormEndTime("19:30");
     setFormAllDay(false);
     setModal({ mode: "create" });
   }
@@ -215,10 +211,8 @@ export default function CalendarPage() {
   function handleAllDayToggle(allDay: boolean) {
     setFormAllDay(allDay);
     if (!allDay && !formStartTime) {
-      const now = new Date();
-      setFormStartTime(roundTime(`${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`));
-      const next = new Date(now.getTime() + 60 * 60 * 1000);
-      setFormEndTime(roundTime(`${String(next.getHours()).padStart(2, "0")}:${String(next.getMinutes()).padStart(2, "0")}`));
+      setFormStartTime("18:30");
+      setFormEndTime("19:30");
     }
   }
 
@@ -441,9 +435,8 @@ export default function CalendarPage() {
           const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
           resetForm();
           setFormDate(date); setFormEndDate(date);
-          setFormStartTime(roundTime(`${String(today.getHours()).padStart(2,"0")}:${String(today.getMinutes()).padStart(2,"0")}`));
-          const next = new Date(today.getTime() + 60 * 60 * 1000);
-          setFormEndTime(roundTime(`${String(next.getHours()).padStart(2,"0")}:${String(next.getMinutes()).padStart(2,"0")}`));
+          setFormStartTime("18:30");
+          setFormEndTime("19:30");
           setModal({ mode: "create" });
         }}
         className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-400 text-white rounded-full shadow-lg shadow-sky-200 flex items-center justify-center text-2xl font-bold z-40 active:scale-95 transition-transform"
