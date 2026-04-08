@@ -414,7 +414,16 @@ export default function CalendarPage() {
             locale="en"
             firstDay={1}
             headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }}
-            buttonText={{ today: "Today", month: "Month", week: "Week" }}
+            buttonText={{ today: "今日", month: "月", week: "週" }}
+            titleFormat={(date) => {
+              const start = date.start;
+              const end = date.end;
+              if (end && (end.month !== start.month || end.year !== start.year)) {
+                const endDate = new Date(end.year, end.month, end.day - 1);
+                return `${start.year}/${start.month + 1}/${start.day}-${endDate.getDate()}`;
+              }
+              return `${start.year}/${start.month + 1}`;
+            }}
             dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
             dayCellContent={(info) => info.dayNumberText}
             dayCellClassNames={(info) => {
