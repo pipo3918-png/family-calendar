@@ -434,18 +434,7 @@ export default function CalendarPage() {
                 },
               },
             }}
-            dayHeaderContent={(info) => {
-              const weekday = info.date.toLocaleDateString("en-US", { weekday: "short" });
-              if (info.view.type === "dayGridWeek") {
-                return (
-                  <div className="flex flex-col items-center gap-0.5 py-0.5">
-                    <span>{weekday}</span>
-                    <span className="text-base font-bold leading-none">{info.date.getDate()}</span>
-                  </div>
-                );
-              }
-              return weekday;
-            }}
+            dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
             dayCellContent={(info) => info.dayNumberText}
             dayCellClassNames={(info) => {
               const d = info.date.getDay();
