@@ -421,14 +421,16 @@ export default function CalendarPage() {
             views={{
               dayGridMonth: {
                 titleFormat: (date) =>
-                  `${date.start.getUTCFullYear()}/${date.start.getUTCMonth() + 1}`,
+                  `${date.start.year}/${date.start.month + 1}`,
               },
               dayGridWeek: {
                 titleFormat: (date) => {
                   const s = date.start;
-                  const e = date.end ? new Date(date.end.getTime() - 86400000) : s;
-                  const sy = s.getUTCFullYear(), sm = s.getUTCMonth() + 1, sd = s.getUTCDate();
-                  const ey = e.getUTCFullYear(), em = e.getUTCMonth() + 1, ed = e.getUTCDate();
+                  const eMarker = date.end
+                    ? new Date(date.end.marker.getTime() - 86400000)
+                    : s.marker;
+                  const sy = s.year, sm = s.month + 1, sd = s.day;
+                  const ey = eMarker.getUTCFullYear(), em = eMarker.getUTCMonth() + 1, ed = eMarker.getUTCDate();
                   if (sy !== ey) return `${sy}/${sm}/${sd}-${ey}/${em}/${ed}`;
                   if (sm !== em) return `${sy}/${sm}/${sd}-${em}/${ed}`;
                   return `${sy}/${sm}/${sd}-${ed}`;
