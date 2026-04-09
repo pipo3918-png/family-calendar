@@ -434,8 +434,24 @@ export default function CalendarPage() {
                 },
               },
             }}
-            dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
-            dayCellContent={(info) => info.dayNumberText}
+            dayHeaderContent={(info) => {
+              const weekday = info.date.toLocaleDateString("en-US", { weekday: "short" });
+              if (info.view.type !== "dayGridWeek") return weekday;
+              const today = new Date();
+              const isToday =
+                info.date.getFullYear() === today.getFullYear() &&
+                info.date.getMonth() === today.getMonth() &&
+                info.date.getDate() === today.getDate();
+              return (
+                <div className="flex flex-col items-center gap-1 py-0.5">
+                  <span>{weekday}</span>
+                  <span className={`w-7 h-7 flex items-center justify-center rounded-full text-sm font-medium leading-none ${
+                    isToday ? "bg-sky-500 text-white" : "text-gray-700"
+                  }`}>{info.date.getDate()}</span>
+                </div>
+              );
+            }}
+            dayCellContent={(info) => info.view.type === "dayGridWeek" ? "" : info.dayNumberText}
             dayCellClassNames={(info) => {
               const d = info.date.getDay();
               if (d === 6) return ["!bg-blue-50"];
