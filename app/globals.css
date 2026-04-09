@@ -144,6 +144,12 @@ body {
   margin-bottom: 12px;
 }
 
+/* 週ビューでも月ビュー同様に日付番号をセル内上端に表示 */
+.fc-dayGridWeek-view .fc-daygrid-day-top {
+  display: flex !important;
+  justify-content: flex-end;
+}
+
 @media (max-width: 640px) {
   .fc .fc-toolbar.fc-header-toolbar {
     flex-wrap: wrap;
