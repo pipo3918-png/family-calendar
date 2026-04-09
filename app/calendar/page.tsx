@@ -413,10 +413,7 @@ export default function CalendarPage() {
             initialView="dayGridMonth"
             locale="en"
             firstDay={1}
-            headerToolbar={isMobile
-              ? { left: "prev,next", center: "title", right: "dayGridMonth,dayGridWeek" }
-              : { left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }
-            }
+            headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,dayGridWeek" }}
             buttonText={{ today: "今日", month: "月", week: "週" }}
             views={{
               dayGridMonth: {
@@ -437,7 +434,18 @@ export default function CalendarPage() {
                 },
               },
             }}
-            dayHeaderContent={(info) => info.date.toLocaleDateString("en-US", { weekday: "short" })}
+            dayHeaderContent={(info) => {
+              const weekday = info.date.toLocaleDateString("en-US", { weekday: "short" });
+              if (info.view.type === "dayGridWeek") {
+                return (
+                  <div className="flex flex-col items-center gap-0.5 py-0.5">
+                    <span>{weekday}</span>
+                    <span className="text-base font-bold leading-none">{info.date.getDate()}</span>
+                  </div>
+                );
+              }
+              return weekday;
+            }}
             dayCellContent={(info) => info.dayNumberText}
             dayCellClassNames={(info) => {
               const d = info.date.getDay();
