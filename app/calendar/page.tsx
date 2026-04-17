@@ -123,6 +123,7 @@ export default function CalendarPage() {
   const [formTentative, setFormTentative] = useState(false);
   const [formTagIds, setFormTagIds] = useState<number[]>([]);
   const [formError, setFormError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [addingTag, setAddingTag] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -248,28 +249,34 @@ export default function CalendarPage() {
   }
 
   async function handleSave() {
+    if (isSaving) return;
     setFormError("");
     if (!formTitle.trim()) { setFormError("タイトルを入力してください"); return; }
     if (!formDate) { setFormError("日付を入力してください"); return; }
 
-    const body = {
-      title: formTitle.trim(),
-      start: formAllDay ? formDate : `${formDate}T${formStartTime || "00:00"}`,
-      end: formAllDay ? addDays(formEndDate || formDate, 1) : (formEndTime ? `${formEndDate || formDate}T${formEndTime}` : null),
-      allDay: formAllDay,
-      location: formLocation || null,
-      lateLevel: formLateLevel,
-      notes: formNotes || null,
-      participants: formParticipants,
-      tentative: formTentative,
-      tagIds: formTagIds,
-    };
+    setIsSaving(true);
+    try {
+      const body = {
+        title: formTitle.trim(),
+        start: formAllDay ? formDate : `${formDate}T${formStartTime || "00:00"}`,
+        end: formAllDay ? addDays(formEndDate || formDate, 1) : (formEndTime ? `${formEndDate || formDate}T${formEndTime}` : null),
+        allDay: formAllDay,
+        location: formLocation || null,
+        lateLevel: formLateLevel,
+        notes: formNotes || null,
+        participants: formParticipants,
+        tentative: formTentative,
+        tagIds: formTagIds,
+      };
 
-    const url = modal.mode === "edit" ? `/api/events/${modal.event.id}` : "/api/events";
-    const method = modal.mode === "edit" ? "PUT" : "POST";
-    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    if (!res.ok) { setFormError((await res.json()).error); return; }
-    setModal({ mode: "closed" }); loadEvents();
+      const url = modal.mode === "edit" ? `/api/events/${modal.event.id}` : "/api/events";
+      const method = modal.mode === "edit" ? "PUT" : "POST";
+      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!res.ok) { setFormError((await res.json()).error); return; }
+      setModal({ mode: "closed" }); loadEvents();
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   async function handleDelete() {
@@ -750,8 +757,8 @@ export default function CalendarPage() {
                 </button>
               )}
               {canEdit && (
-                <button onClick={handleSave} className="flex-1 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl py-3.5 text-sm font-bold active:opacity-80 transition-opacity shadow-md shadow-sky-100">
-                  保存
+                <button onClick={handleSave} disabled={isSaving} className="flex-1 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl py-3.5 text-sm font-bold active:opacity-80 transition-opacity shadow-md shadow-sky-100 disabled:opacity-50">
+                  {isSaving ? "保存中…" : "保存"}
                 </button>
               )}
             </div>
