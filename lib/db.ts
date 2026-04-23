@@ -46,6 +46,14 @@ function getDb() {
       tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
       PRIMARY KEY (event_id, tag_id)
     );
+
+    CREATE TABLE IF NOT EXISTS office_attendance (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      date TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(user_id, date)
+    );
   `);
 
   // 既存DBへのカラム追加（エラーは無視）

@@ -128,6 +128,12 @@ export default function CalendarPage() {
   const [addingTag, setAddingTag] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  const [attendanceEvents, setAttendanceEvents] = useState<object[]>([]);
+  const [currentView, setCurrentView] = useState("dayGridMonth");
+  const [attendanceOpen, setAttendanceOpen] = useState(false);
+  const [attendanceDate, setAttendanceDate] = useState("");
+  const [isSavingAttendance, setIsSavingAttendance] = useState(false);
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -152,7 +158,12 @@ export default function CalendarPage() {
     if (r.ok) setAllTags(await r.json());
   }, []);
 
-  useEffect(() => { loadEvents(); loadTags(); }, [loadEvents, loadTags]);
+  const loadAttendance = useCallback(async () => {
+    const r = await fetch("/api/office-attendance");
+    if (r.ok) setAttendanceEvents(await r.json());
+  }, []);
+
+  useEffect(() => { loadEvents(); loadTags(); loadAttendance(); }, [loadEvents, loadTags, loadAttendance]);
 
   function resetForm() {
     setFormTitle(""); setFormDate(""); setFormStartTime("");
@@ -192,6 +203,13 @@ export default function CalendarPage() {
   function openEdit(info: EventClickArg) {
     eventClickedRef.current = true;
     setTimeout(() => { eventClickedRef.current = false; }, 300);
+    if (info.event.extendedProps?.isOfficeAttendance) {
+      if (me && info.event.extendedProps.userId === me.id) {
+        setAttendanceDate(info.event.startStr.slice(0, 10));
+        setAttendanceOpen(true);
+      }
+      return;
+    }
     const ev = events.find((e) => e.id === info.event.id);
     if (!ev) return;
     resetForm();
@@ -287,6 +305,27 @@ export default function CalendarPage() {
     setModal({ mode: "closed" }); loadEvents();
   }
 
+  async function handleSaveAttendance() {
+    if (isSavingAttendance) return;
+    setIsSavingAttendance(true);
+    try {
+      const res = await fetch("/api/office-attendance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: attendanceDate }),
+      });
+      if (res.ok) { setAttendanceOpen(false); loadAttendance(); }
+    } finally {
+      setIsSavingAttendance(false);
+    }
+  }
+
+  async function handleDeleteAttendance(id: number) {
+    await fetch(`/api/office-attendance/${id}`, { method: "DELETE" });
+    setAttendanceOpen(false);
+    loadAttendance();
+  }
+
   async function handleEventDrop(info: EventDropArg) {
     const ev = events.find((e) => e.id === info.event.id);
     if (!ev) return;
@@ -316,6 +355,17 @@ export default function CalendarPage() {
   }
 
   function renderEventContent(info: EventContentArg) {
+    if (info.event.extendedProps?.isOfficeAttendance) {
+      const { userColor, userName } = info.event.extendedProps;
+      return (
+        <div
+          className="px-1.5 py-0.5 w-full flex items-center gap-1 rounded text-xs font-bold"
+          style={{ backgroundColor: userColor + "28", color: userColor }}
+        >
+          <span>🏢</span><span>{userName}</span>
+        </div>
+      );
+    }
     const { participants, tentative, tags } = info.event.extendedProps as CalendarEvent["extendedProps"];
     const eventParticipants = PARTICIPANTS.filter((p) => participants?.includes(p.name));
     const color = info.event.backgroundColor;
@@ -428,6 +478,7 @@ export default function CalendarPage() {
                   `${date.start.year}/${date.start.month + 1}`,
               },
               dayGridWeek: {
+                dayMaxEvents: false,
                 titleFormat: (date) => {
                   const s = date.start;
                   const eMarker = date.end
@@ -466,7 +517,7 @@ export default function CalendarPage() {
               return [];
             }}
             height="100%"
-            events={events}
+            events={currentView === "dayGridWeek" ? [...events, ...(attendanceEvents as CalendarEvent[])] : events}
             selectable
             editable={!isMobile}
             longPressDelay={isMobile ? 500 : 0}
@@ -477,25 +528,83 @@ export default function CalendarPage() {
             eventResize={(info: EventChangeArg) => handleEventDrop(info as unknown as EventDropArg)}
             eventContent={renderEventContent}
             dayMaxEvents={isMobile ? 2 : 3}
+            datesSet={(info) => setCurrentView(info.view.type)}
           />
         </div>
       </div>
 
-      {/* モバイル用FAB（＋ボタン） */}
+      {/* モバイル用FAB（出社予定登録） */}
       <button
         onClick={() => {
           const today = new Date();
-          const date = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
-          resetForm();
-          setFormDate(date); setFormEndDate(date);
-          setFormStartTime("18:30");
-          setFormEndTime("22:30");
-          setModal({ mode: "create" });
+          const d = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+          setAttendanceDate(d);
+          setAttendanceOpen(true);
         }}
-        className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-sky-500 to-teal-400 text-white rounded-full shadow-lg shadow-sky-200 flex items-center justify-center text-2xl font-bold z-40 active:scale-95 transition-transform"
+        className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-400 text-white rounded-full shadow-lg shadow-emerald-200 flex items-center justify-center text-2xl z-40 active:scale-95 transition-transform"
+        title="出社予定を登録"
       >
-        ＋
+        🏢
       </button>
+
+      {/* 出社予定モーダル */}
+      {attendanceOpen && me && (
+        <div
+          className="fixed inset-0 bg-sky-950/30 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 sm:px-4 sm:py-6"
+          onClick={() => setAttendanceOpen(false)}
+        >
+          <div
+            className="bg-white w-full sm:max-w-xs sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-400 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-white font-bold text-base">🏢 出社予定</h2>
+              <button onClick={() => setAttendanceOpen(false)} className="text-white/70 hover:text-white text-xl leading-none">×</button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest mb-1.5 text-emerald-500">日付</label>
+                <input
+                  type="date"
+                  value={attendanceDate}
+                  onChange={(e) => setAttendanceDate(e.target.value)}
+                  className="w-full border-2 rounded-xl px-3 py-2 text-sm font-medium border-emerald-100 focus:border-emerald-400 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-2 bg-emerald-50 rounded-xl px-3 py-2">
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: me.color }} />
+                <span className="text-sm font-semibold text-emerald-700">{me.name}</span>
+              </div>
+              {(() => {
+                const existing = (attendanceEvents as { start: string; extendedProps: { userId: number; attendanceId: number } }[])
+                  .find((e) => e.extendedProps?.userId === me.id && e.start === attendanceDate);
+                if (existing) {
+                  return (
+                    <div className="space-y-2">
+                      <p className="text-xs text-emerald-600 font-medium text-center">この日はすでに出社予定が登録されています</p>
+                      <button
+                        onClick={() => handleDeleteAttendance(existing.extendedProps.attendanceId)}
+                        className="w-full border-2 border-red-100 text-red-400 rounded-xl py-3 text-sm font-semibold"
+                      >
+                        登録を取り消す
+                      </button>
+                    </div>
+                  );
+                }
+                return (
+                  <button
+                    onClick={handleSaveAttendance}
+                    disabled={isSavingAttendance || !attendanceDate}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-400 text-white rounded-xl py-3 text-sm font-bold disabled:opacity-50"
+                  >
+                    {isSavingAttendance ? "登録中…" : "出社予定を登録"}
+                  </button>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
 
       {modal.mode !== "closed" && (
         <div
