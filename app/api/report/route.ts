@@ -69,7 +69,13 @@ export async function GET(req: NextRequest) {
     // 合計時間（分）
     let totalMinutes = 0;
     for (const ev of myEvents) {
-      if (!ev.all_day && ev.end) {
+      if (ev.all_day) {
+        // 終日予定は1日8時間換算
+        const days = ev.end
+          ? Math.round((new Date(ev.end).getTime() - new Date(ev.start).getTime()) / 86400000)
+          : 1;
+        totalMinutes += days * 8 * 60;
+      } else if (ev.end) {
         const diff = Math.round((new Date(ev.end).getTime() - new Date(ev.start).getTime()) / 60000);
         if (diff > 0) totalMinutes += diff;
       }
