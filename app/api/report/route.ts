@@ -12,6 +12,9 @@ type EventRow = {
   participants: string | null;
   late_level: number;
   tags_raw: string | null;
+  start: string;
+  end: string | null;
+  all_day: number;
 };
 
 export async function GET(req: NextRequest) {
@@ -28,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   const db = getDb();
   const rows = db.prepare(`
-    SELECT e.participants, e.late_level,
+    SELECT e.participants, e.late_level, e.start, e.end, e.all_day,
            GROUP_CONCAT(t.name) as tags_raw
     FROM events e
     LEFT JOIN event_tags et ON e.id = et.event_id
@@ -63,7 +66,16 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return { name: p.name, color: p.color, total: myEvents.length, tags, lateBreakdown };
+    // 合計時間（分）
+    let totalMinutes = 0;
+    for (const ev of myEvents) {
+      if (!ev.all_day && ev.end) {
+        const diff = Math.round((new Date(ev.end).getTime() - new Date(ev.start).getTime()) / 60000);
+        if (diff > 0) totalMinutes += diff;
+      }
+    }
+
+    return { name: p.name, color: p.color, total: myEvents.length, totalMinutes, tags, lateBreakdown };
   });
 
   return NextResponse.json({ year, month, participants: stats });

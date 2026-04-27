@@ -9,9 +9,18 @@ type ParticipantStat = {
   name: string;
   color: string;
   total: number;
+  totalMinutes: number;
   tags: TagStat[];
   lateBreakdown: Record<number, number>;
 };
+
+function fmtDuration(minutes: number): string {
+  if (minutes === 0) return "";
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m}分`;
+  return m > 0 ? `${h}時間${m}分` : `${h}時間`;
+}
 type Report = { year: number; month: number; participants: ParticipantStat[] };
 
 const TAG_PALETTE = [
@@ -138,7 +147,12 @@ export default function ReportPage() {
                   </span>
                   <div>
                     <p className="font-bold text-gray-800">{p.name}</p>
-                    <p className="text-xs text-gray-400">合計 <span className="font-bold text-gray-600">{p.total}</span> 件</p>
+                    <p className="text-xs text-gray-400">
+                      合計 <span className="font-bold text-gray-600">{p.total}</span> 件
+                      {p.totalMinutes > 0 && (
+                        <span className="ml-2">・ <span className="font-bold text-gray-600">{fmtDuration(p.totalMinutes)}</span></span>
+                      )}
+                    </p>
                   </div>
                 </div>
 
